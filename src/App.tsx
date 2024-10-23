@@ -13,11 +13,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [renderCount, setRenderCount] = useState(0);
-
-  const increaseCounter = () => {
-    setRenderCount(prevCount => prevCount + 1);
-  };
 
   const addTodo = async (todo: Todo): Promise<void> => {
     try {
@@ -30,35 +25,30 @@ export const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    let filteredTodos: Todo[];
+  const getFilteredTodos = () => {
+    switch (filter) {
+      case 'active':
+        return todos.filter(todo => !todo.completed);
+      case 'completed':
+        return todos.filter(todo => todo.completed);
+      default:
+        return todos;
+    }
+  };
 
+  useEffect(() => {
     getTodos()
       .then(todosFromServer => {
-        switch (filter) {
-          case 'active':
-            filteredTodos = todosFromServer.filter(
-              todo => todo.completed === false,
-            );
-            break;
-          case 'completed':
-            filteredTodos = todosFromServer.filter(
-              todo => todo.completed === true,
-            );
-            break;
-          default:
-            filteredTodos = todosFromServer;
-            break;
-        }
-
-        setTodos(filteredTodos);
+        setTodos(todosFromServer);
       })
       .catch(() => setErrorMessage('Unable to load todos'));
-  }, [filter]);
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
+
+  const filteredTodos = getFilteredTodos();
 
   return (
     <div className="todoapp">
@@ -67,22 +57,21 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           <TodoForm
-            todos={todos}
+            todos={filteredTodos}
             onAddTodo={addTodo}
             handleError={setErrorMessage}
-            increaseCounter={increaseCounter}
           />
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          <TodoList todos={todos} />
+          <TodoList todos={filteredTodos} />
         </section>
 
         {/* Hide the footer if there are no todos */}
         {todos.length > 0 && <Footer onFilter={setFilter} />}
       </div>
 
-      <ErrorMessage renderCounter={renderCount} errorMessage={errorMessage} />
+      <ErrorMessage errorMessage={errorMessage} />
     </div>
   );
 };

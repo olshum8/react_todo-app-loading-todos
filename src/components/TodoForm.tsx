@@ -6,14 +6,12 @@ interface Props {
   todos: Todo[];
   onAddTodo: (todo: Todo) => Promise<void>;
   handleError: (error: string) => void;
-  increaseCounter: () => void;
 }
 
 export const TodoForm: React.FC<Props> = ({
   todos,
   onAddTodo,
   handleError,
-  increaseCounter,
 }) => {
   const [todo, setTodo] = useState('');
 
@@ -31,7 +29,6 @@ export const TodoForm: React.FC<Props> = ({
 
     if (!todo.trim()) {
       handleError('Title should not be empty');
-      increaseCounter();
 
       return;
     }
@@ -48,7 +45,6 @@ export const TodoForm: React.FC<Props> = ({
       resetForm();
     } catch (error) {
       handleError('Unable to add a todo');
-      increaseCounter();
     }
   };
 

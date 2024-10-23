@@ -3,13 +3,9 @@ import { useEffect, useState } from 'react';
 
 interface Props {
   errorMessage: string;
-  renderCounter: number;
 }
 
-export const ErrorMessage: React.FC<Props> = ({
-  errorMessage,
-  renderCounter,
-}) => {
+export const ErrorMessage: React.FC<Props> = ({ errorMessage }) => {
   const [isHidden, setIsHidden] = useState(true);
 
   const handleClose = () => {
@@ -26,7 +22,7 @@ export const ErrorMessage: React.FC<Props> = ({
 
       return () => clearTimeout(timer);
     }
-  }, [errorMessage, renderCounter]);
+  }, [errorMessage]);
 
   return (
     <div
